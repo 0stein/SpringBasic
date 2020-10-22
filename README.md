@@ -56,6 +56,24 @@ public Object trace(ProceedingJoinPoint joinPoint) throws Throwable{
   }  
 }
 ```
-
-
   
+trace 메서드는 특정 Joinpoint(advice를 적용 가능 지점) 에서 실행 될 공통기능을 정의하는 메서드이다.  
+공통기능을 제공할 클래스를 작성하고 xml 파일에 Aspect(공통기능)를 설정한다.
+
+setting.xml  
+```
+...  
+<bean id="profiler" class="aop.Profiler"/>
+...  
+<aop:config>
+	<aop:aspect id="traceAspect" ref="profiler">
+		<aop:pointcut expression="execution(public * aop..*(..))" id="publicMethod"/>
+		<aop:around pointcut-ref="publicMethod" method="trace"/>
+	</aop:aspect>
+</aop:config>
+```
+먼저 공통기능을 정의한 클래스를 빈으로 등록해준다.  
+pointcut 의 표현식은 정규표현식이나 aspectJ문법을 통해 설정 할 수 있다.  
+위 설정내용에 따르면 aop 패키지 안에 존재하는 모든 public method는 적용 대상이다.  
+around advice로 적용되며 trace 메소드를 사용한다.  
+around advice는 가장 범용적으로 사용되며 대상 객체의 메소드 실행 전/후 익셉션 발생 시에 적용할 수 있는 advice 이다.  
